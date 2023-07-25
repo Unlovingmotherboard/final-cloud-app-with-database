@@ -47,6 +47,18 @@
                     <div class="card mt-1">
                         <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
                         <div class="card-body">{{lesson.content}}</div>
+                        <div id="exam"> 
+                            {% for question in lesson.question_set.all %}
+                                <div> Question: {{question.question_text}} Grade Weight: {{question.question_grade}}</div>
+                                <div> 
+                                    {% for choice in question.choice_set.all %}
+                                    <div>
+                                        Choice: {{choice.choice}}
+                                     </div> 
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -54,14 +66,6 @@
             <!-- <HINT> Use Bootstrap Collapse to hide exam first, more details could be found here
             https://www.w3schools.com/bootstrap4/bootstrap_collapse.asp-->
 
-            <!--
-
-            A collapse example here:
-            <div id="exam" class="collapse">
-                Click to expand elements within the collapse div
-                </div>
-
-            -->
 
             <!-- <HINT> If user is authenticated, show course exam with a list of question -->
 
