@@ -110,12 +110,28 @@ def enroll(request, course_id):
          # Add each selected choice object to the submission object
          # Redirect to show_exam_result with the submission id
 def submit(request, course_id):
-    form_data = request.POST.get('submitted_answers')
-    submission_object = {course_and_user.id, form_data}
+    payload = request.POST.dict()
+    enrollment_id = get_object_or_404(Enrollment, pk=course_id)
+    #Get user and course object
+    our_user = request.user
+    #Get course object
+    course = get_object_or_404(Course, pk=course_id)
+    #Create submission object referring to the enrollment
+    
+    our_submission = Submission.objects.create(enrollment=enrollment_id)
+    our_submission.save()
+           
+    print(payload.keys()) 
 
-    get_submission_id = Submission.objects.create(enrollment=.id, choices= form_data) #This is where i stopped
+    for keys, values in payload.items():
+        if (keys == "csrfmiddlewaretoken"): 
+            print("skipping")
+        else:
+           choice = get_object_or_404(Choice, pk=keys)
+           our_submission.choices.add(values)
 
-    return redirect(show_exam_result(request, course_id, get_submission_id.id))
+
+    return redirect(show_exam_result(request, course_id, our_submission.id))
 
 
 
@@ -136,7 +152,8 @@ def submit(request, course_id):
         # Get the selected choice ids from the submission record
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
-#def show_exam_result(request, course_id, submission_id):
+# def show_exam_result(request, course_id, submission_id):
+#     print("this is working")
 
 
 
