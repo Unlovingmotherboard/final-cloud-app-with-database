@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from .models import Course, Enrollment, Question, Choice, Submission
+# <HINT> Import any new Models here
+from .models import Course, Enrollment
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -109,30 +110,7 @@ def enroll(request, course_id):
          # Collect the selected choices from exam form
          # Add each selected choice object to the submission object
          # Redirect to show_exam_result with the submission id
-def submit(request, course_id):
-    payload = request.POST.dict()
-    enrollment_id = get_object_or_404(Enrollment, pk=course_id)
-    #Get user and course object
-    our_user = request.user
-    #Get course object
-    course = get_object_or_404(Course, pk=course_id)
-    #Create submission object referring to the enrollment
-    
-    our_submission = Submission.objects.create(enrollment=enrollment_id)
-    our_submission.save()
-           
-    print(payload.keys()) 
-
-    for keys, values in payload.items():
-        if (keys == "csrfmiddlewaretoken"): 
-            print("skipping")
-        else:
-           choice = get_object_or_404(Choice, pk=keys)
-           our_submission.choices.add(values)
-
-
-    return redirect(show_exam_result(request, course_id, our_submission.id))
-
+#def submit(request, course_id):
 
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
@@ -152,8 +130,7 @@ def submit(request, course_id):
         # Get the selected choice ids from the submission record
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
-# def show_exam_result(request, course_id, submission_id):
-#     print("this is working")
+#def show_exam_result(request, course_id, submission_id):
 
 
 
