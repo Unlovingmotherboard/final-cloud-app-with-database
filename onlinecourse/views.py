@@ -116,14 +116,15 @@ def submit(request, course_id):
     get_enrollment = Enrollment.objects.get(user=get_user, course=get_course)
 
     exam_submission = Submission.objects.create(enrollment=get_enrollment)
-
+    exam_submission.save()
     get_request_choices = extract_answers(request)
 
     for choice_id in get_request_choices:
+        
         exam_submission.chocies.add(choice_id)
+        
 
     exam_submission.save()#not 100% if choices were added to submission
-    print("\n", exam_submission.id ,"\n")
     return HttpResponseRedirect(show_exam_result(request, course_id, exam_submission.id))
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
@@ -144,6 +145,12 @@ def extract_answers(request):
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
 def show_exam_result(request, course_id, submission_id):
-    print("this is working")
+    get_course = Course.objects.filter(id=course_id)
+    get_submission = Submission.objects.filter(id=submission_id)
 
+    for choices in get_submission:
+        print("\n choices: ", choices) #still trying to figure this out
+
+    print("\n", "get_submission: ", get_submission ,"\n")
+    
 
