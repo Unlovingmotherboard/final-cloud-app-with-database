@@ -62,7 +62,7 @@ class Course(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Enrollment')
     total_enrollment = models.IntegerField(default=0)
     is_enrolled = False
-
+    
     def __str__(self):
         return "Name: " + self.name + "," + \
                "Description: " + self.description
@@ -111,8 +111,12 @@ class Question(models.Model):
 
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
-        all_answers = self.choice_set.filter(is_correct=True).count()
-        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        all_answers = self.choices.filter(is_correct=True).count()
+        selected_correct = self.choices.filter(is_correct=True, id__in=selected_ids).count()
+
+        print(all_answers)
+        print(selected_correct)
+
         if all_answers == selected_correct:
             return True
         else:
@@ -138,4 +142,4 @@ class Choice(models.Model):
 # One choice could belong to multiple submissions
 class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-    chocies = models.ManyToManyField(Choice)
+    choices = models.ManyToManyField(Choice)

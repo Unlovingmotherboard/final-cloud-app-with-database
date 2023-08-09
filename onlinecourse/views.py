@@ -111,21 +111,18 @@ def enroll(request, course_id):
          # Add each selected choice object to the submission object
          # Redirect to show_exam_result with the submission id
 def submit(request, course_id):
-    get_user = request.user
-    get_course = get_object_or_404(Course, pk=course_id) 
-    get_enrollment = Enrollment.objects.get(user=get_user, course=get_course)
+    our_user = request.user
+    course_obj = Course.objects.get(id=course_id)
+    enrollment_obj = Enrollment.objects.get(user = our_user, course = course_id)
+    submission_obj = Submission.objects.create(enrollment=enrollment_obj)
 
-    exam_submission = Submission.objects.create(enrollment=get_enrollment)
-    exam_submission.save()
     get_request_choices = extract_answers(request)
 
-    for choice_id in get_request_choices:
-        
-        exam_submission.chocies.add(choice_id)
-        
+    submission_obj.choices.set(get_request_choices)
 
-    exam_submission.save()#not 100% if choices were added to submission
-    return HttpResponseRedirect(show_exam_result(request, course_id, exam_submission.id))
+    submission_obj.save()
+
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:show_exam_result', args=(course_id ,submission_obj.id ))) 
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
 def extract_answers(request):
@@ -145,12 +142,20 @@ def extract_answers(request):
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
 def show_exam_result(request, course_id, submission_id):
-    get_course = Course.objects.filter(id=course_id)
-    get_submission = Submission.objects.filter(id=submission_id)
-
-    for choices in get_submission:
-        print("\n choices: ", choices) #still trying to figure this out
-
-    print("\n", "get_submission: ", get_submission ,"\n")
+    get_course = Course.objects.get(id=course_id)
+    get_submission = Submission.objects.get(id=submission_id)
+    get_choices = get_submission.choices.all()
     
+    check_submission = Question.is_get_score(get_submission, get_choices)
+
+    context = {}
+
+    context['course'] = get_course
+    context['grade'] = check_submission
+    context['selected_ids'] = get_choices
+
+    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
+
+
+    # 'course': get_course, 'selected_ids': get_choices, 'grade': check_submission
 
