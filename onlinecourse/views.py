@@ -148,12 +148,17 @@ def show_exam_result(request, course_id, submission_id):
     
     check_submission = Question.is_get_score(get_submission, get_choices)
 
+    score = 0
+    for i in get_submission.choices.all().filter(is_correct=True).values_list('question_id'):
+        score += Question.objects.filter(id=i[0]).first().grade_weight    
+
     context = {}
 
     context['course'] = get_course
-    context['grade'] = check_submission
+    context['grade'] = score
     context['selected_ids'] = get_choices
-
+    
+    print(score)
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
 
 
