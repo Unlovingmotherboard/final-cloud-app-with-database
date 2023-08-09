@@ -113,10 +113,8 @@ class Question(models.Model):
     def is_get_score(self, selected_ids):
         all_answers = self.choices.filter(is_correct=True).count()
         selected_correct = self.choices.filter(is_correct=True, id__in=selected_ids).count()
-        if all_answers == selected_correct:
-            return True
-        else:
-            return False
+        
+        return selected_correct
 
 
 #  <HINT> Create a Choice Model with:
